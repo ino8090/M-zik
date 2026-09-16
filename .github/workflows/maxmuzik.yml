@@ -3,7 +3,7 @@ name: MaxMuzik Live Stream
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */6 * * *' # Her 6 saatte bir otomatik çalıştırma
+    - cron: '0 */6 * * *'
 
 jobs:
   stream:
@@ -17,17 +17,24 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install FFmpeg & Dependencies
+      - name: Install Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
           python -m pip install --upgrade pip
           pip install requests yt-dlp
 
-      - name: Create Cookies File
+      - name: Safely Create Cookies File
+        env:
+          YOUTUBE_COOKIES: ${{ secrets.YOUTUBE_COOKIES }}
         run: |
-          echo "${{ secrets.YOUTUBE_COOKIES }}" > cookies.txt
-        # GitHub Secrets üzerinde YOUTUBE_COOKIES tanımlanmış olmalıdır.
+          if [ -n "$YOUTUBE_COOKIES" ]; then
+            printf "%s\n" "$YOUTUBE_COOKIES" > cookies.txt
+            echo "Cookie dosyasi eklendi."
+          else
+            echo "" > cookies.txt
+            echo "Cookie secret bulunamadi, bos dosya olusturuldu."
+          fi
 
       - name: Run Stream Script
         run: python maxmuzik.py
