@@ -1,35 +1,33 @@
-name: maxmuzik
+name: MaxMuzik Live Stream
 
 on:
-  schedule:
-    - cron: '0 */6 * * *'
   workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *' # Her 6 saatte bir otomatik çalıştırma
 
 jobs:
   stream:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Depoyu Klonla
+      - name: Code Checkout
         uses: actions/checkout@v4
 
-      - name: Python Ortamını Kur
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
-      - name: Bağımlılıkları ve Sistem Paketlerini Yükle
+      - name: Install FFmpeg & Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          sudo apt-get install -y ffmpeg
           python -m pip install --upgrade pip
           pip install requests yt-dlp
 
-      - name: Canlı Yayını Başlat
-        env:
-          STREAM_KEY: ${{ secrets.STREAM_KEY }}
-          M3U_URL: ${{ secrets.M3U_URL }}
-          LOGO_URL: ${{ secrets.LOGO_URL }}
-          STATE_FILE_NAME: "maxmuzik.json"
+      - name: Create Cookies File
         run: |
-          python maxmuzik.py
+          echo "${{ secrets.YOUTUBE_COOKIES }}" > cookies.txt
+        # GitHub Secrets üzerinde YOUTUBE_COOKIES tanımlanmış olmalıdır.
+
+      - name: Run Stream Script
+        run: python maxmuzik.py
