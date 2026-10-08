@@ -319,40 +319,50 @@ def start_m3u_stream():
 
         has_logo1 = os.path.exists('logo.png') and os.path.getsize('logo.png') > 0
 
-        # Film başlığı yazısı (Kayan yazının üstünde hizalandı)
-        title_drawtext = (
-            f"drawtext=textfile='title.txt':reload=1:fontfile='{BOLD_FONT_PATH}':"
-            f"fontcolor=white@{TEXT_OPACITY}:fontsize=30:"
-            f"x=80:y=main_h-th-80"
-        )
-
-        # Kayan yazı ve siyah arka plan bandı
-        ticker_drawtext = (
-            f"drawtext=text='{TICKER_TEXT}':fontfile='{BOLD_FONT_PATH}':"
-            f"fontcolor=white:fontsize=0:"
-            f"box=1:boxcolor=black@0.0:boxborderw=10:"
-            f"x='w-mod(t*0\, w+tw)':y=h-th-20"
-        )
+        # ==================== DÜZELTİLEN FİLTRE ZİNCİRİ ====================
+        filter_chains = [
+            '[0:v]scale=1920:1080:force_original_aspect_ratio=decrease,'
+            'pad=1920:1080:(ow-iw)/2:(oh-ih)/2:black,fps=25[main]'
+        ]
+        last_buf = "[main]"
 
         if has_logo1:
             logo_inputs = ['-i', 'logo.png']
-            filter_str = (
-                '[0:v]scale=1920:1080:force_original_aspect_ratio=decrease,'
-                'pad=1920:1080:(ow-iw)/2:(oh-ih)/2:black,fps=25[main];'
+            filter_chains.append(
                 f'[{logo1_input_index}:v]scale=-2:91,format=rgba,'
-                f'colorchannelmixer=aa={LOGO_OPACITY}[logo1];'
-                '[main][logo1]overlay=main_w-overlay_w-104:80[tmp1];'
-                f'[tmp1]{title_drawtext}[tmp2];'
-                f'[tmp2]{ticker_drawtext}[v]'
+                f'colorchannelmixer=aa={LOGO_OPACITY}[logo1]'
             )
+            filter_chains.append(f'{last_buf}[logo1]overlay=main_w-overlay_w-104:80[v_logo]')
+            last_buf = "[v_logo]"
         else:
             logo_inputs = []
-            filter_str = (
-                '[0:v]scale=1920:1080:force_original_aspect_ratio=decrease,'
-                'pad=1920:1080:(ow-iw)/2:(oh-ih)/2:black,fps=25[main];'
-                f'[main]{title_drawtext}[tmp1];'
-                f'[tmp1]{ticker_drawtext}[v]'
+
+        # Font var mı kontrol et, yoksa varsayılan font sistemini kullanması için fontfile çıkarma yap
+        font_param = f":fontfile='{BOLD_FONT_PATH}'" if os.path.exists(BOLD_FONT_PATH) else ""
+
+        # Film başlığı yazısı
+        title_drawtext = (
+            f"drawtext=textfile='title.txt':reload=1{font_param}:"
+            f"fontcolor=white@{TEXT_OPACITY}:fontsize=30:"
+            f"x=80:y=main_h-th-80"
+        )
+        filter_chains.append(f'{last_buf}{title_drawtext}[v_title]')
+        last_buf = "[v_title]"
+
+        # Kayan yazı metni dolu ise ekle, boş ise zinciri doğrudan kesintisiz [v] çıktısına bağla
+        if TICKER_TEXT.strip():
+            ticker_drawtext = (
+                f"drawtext=text='{TICKER_TEXT}'{font_param}:"
+                f"fontcolor=white:fontsize=24:"
+                f"box=1:boxcolor=black@0.5:boxborderw=10:"
+                f"x='w-mod(t*50\, w+tw)':y=h-th-20"
             )
+            filter_chains.append(f'{last_buf}{ticker_drawtext}[v]')
+        else:
+            filter_chains.append(f'{last_buf}null[v]')
+
+        filter_str = ";".join(filter_chains)
+        # ===================================================================
 
         # Kalıcı yayıncı ölmüşse (gerçek bir kopma) yeniden başlat
         publisher.ensure_running()
