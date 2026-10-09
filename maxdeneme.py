@@ -34,7 +34,7 @@ STREAM_KEY = os.getenv("STREAM_KEY") or "maxdeneme"
 RTMP_SERVER = f"{RTMP_URL}/{STREAM_KEY}"
 
 M3U_URL = os.getenv("M3U_URL") or "https://raw.githubusercontent.com/ino8090/0101/refs/heads/main/mpremiuum.m3u"
-LOGO_URL = os.getenv("LOGO_URL") or "https://raw.githubusercontent.com/ino8090/0101/refs/heads/main/1787671958979.png"
+LOGO_URL = os.getenv("LOGO_URL") or "https://raw.githubusercontent.com/ino8090/0101/refs/heads/main/file_000000007be48210a068edefa7260629.png"
 
 STATE_FILE_NAME = os.getenv("STATE_FILE_NAME", "maxtv.json")
 GITHUB_STEP_SUMMARY = os.getenv("GITHUB_STEP_SUMMARY")
@@ -46,8 +46,8 @@ STREAM_USER_AGENT = (
 STREAM_REFERER = "https://vidmody.com/"
 STREAM_ORIGIN = "https://vidmody.com"
 
-LOGO_OPACITY = float(os.getenv("LOGO_OPACITY", "1.0"))
-TEXT_OPACITY = float(os.getenv("TEXT_OPACITY", "0.6"))
+LOGO_OPACITY = float(os.getenv("LOGO_OPACITY", "0.4"))
+TEXT_OPACITY = float(os.getenv("TEXT_OPACITY", "0.5"))
 BOLD_FONT_PATH = os.getenv("BOLD_FONT_PATH", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")
 
 DECODER_THREADS = os.getenv("DECODER_THREADS", "1")
@@ -441,8 +441,8 @@ def build_reader_command(target_url, seek_seconds):
         logo_inputs = ['-i', 'logo.png']
         filter_str = (
             base_scale +
-            f'[{logo_index}:v]scale=-2:85,format=rgba,colorchannelmixer=aa={LOGO_OPACITY}[logo1];'
-            '[main][logo1]overlay=W-w-50:50[tmp1];'
+            f'[{logo_index}:v]scale=-2:91,format=rgba,colorchannelmixer=aa={LOGO_OPACITY}[logo1];'
+            '[main][logo1]overlay=W-w-104:80[tmp1];'
             f'[tmp1]{title_drawtext}[v]'
         )
     else:
