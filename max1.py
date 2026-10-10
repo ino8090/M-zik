@@ -19,7 +19,7 @@ RTMP_SERVER = f"{RTMP_URL}/{STREAM_KEY}"
 M3U_URL = os.getenv("M3U_URL") or "https://raw.githubusercontent.com/ino8090/0101/refs/heads/main/deneme.m3u"
 LOGO_URL = os.getenv("LOGO_URL") or "https://raw.githubusercontent.com/ino8090/0101/refs/heads/main/file_00000000d06c8210b512e76e052d143e.png"
 
-STATE_FILE_NAME = os.getenv("STATE_FILE_NAME", "mega.json")
+STATE_FILE_NAME = os.getenv("STATE_FILE_NAME", "fixtv.json")
 GITHUB_STEP_SUMMARY = os.getenv("GITHUB_STEP_SUMMARY")
 
 STREAM_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -27,7 +27,7 @@ STREAM_REFERER = "https://vidmody.com/"
 
 # Logo ve yazı opaklık ayarları (0.0 - 1.0 arası)
 LOGO_OPACITY = float(os.getenv("LOGO_OPACITY", "1.0"))
-TEXT_OPACITY = float(os.getenv("TEXT_OPACITY", "1.0"))
+TEXT_OPACITY = float(os.getenv("TEXT_OPACITY", "0.5"))
 BOLD_FONT_PATH = os.getenv("BOLD_FONT_PATH", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")
 
 # Ekranın altındaki kayan yazı metni
@@ -322,7 +322,7 @@ def start_m3u_stream():
         # Film başlığı yazısı (Sağ alt köşe)
         title_drawtext = (
             f"drawtext=textfile='title.txt':reload=1:fontfile='{BOLD_FONT_PATH}':"
-            f"fontcolor=white@{TEXT_OPACITY}:fontsize=23:"
+            f"fontcolor=white@{TEXT_OPACITY}:fontsize=25:"
             f"x=main_w-text_w-70:y=main_h-th-70"
         )
 
@@ -340,7 +340,7 @@ def start_m3u_stream():
             filter_str = (
                 '[0:v]scale=1920:1080:force_original_aspect_ratio=decrease,'
                 'pad=1920:1080:(ow-iw)/2:(oh-ih)/2:black,fps=25[main];'
-                f'[{logo1_input_index}:v]scale=-2:122,format=rgba,'
+                f'[{logo1_input_index}:v]scale=-2:120,format=rgba,'
                 f'colorchannelmixer=aa={LOGO_OPACITY}[logo1];'
                 '[main][logo1]overlay=80:80[tmp1];'
                 f'[tmp1]{title_drawtext}[tmp2];'
@@ -466,4 +466,3 @@ if __name__ == "__main__":
         print("\n🛑 Durduruluyor...")
     finally:
         publisher.stop()
-        
