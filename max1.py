@@ -13,13 +13,13 @@ from collections import deque
 
 # ===================== AYARLAR =====================
 RTMP_URL = "rtmp://ssh101.bozztv.com:1935/ssh101"
-STREAM_KEY = os.getenv("STREAM_KEY") or "maxtvp1"
+STREAM_KEY = os.getenv("STREAM_KEY") or "maksiyon1"
 RTMP_SERVER = f"{RTMP_URL}/{STREAM_KEY}"
 
-M3U_URL = os.getenv("M3U_URL") or "https://raw.githubusercontent.com/ino8090/0101/refs/heads/main/mpremiuum.m3u"
-LOGO_URL = os.getenv("LOGO_URL") or "https://raw.githubusercontent.com/ino8090/0101/refs/heads/main/1791553582543.png"
+M3U_URL = os.getenv("M3U_URL") or "https://raw.githubusercontent.com/ino8090/0101/refs/heads/main/deneme.m3u"
+LOGO_URL = os.getenv("LOGO_URL") or "https://raw.githubusercontent.com/ino8090/0101/refs/heads/main/file_00000000d06c8210b512e76e052d143e.png"
 
-STATE_FILE_NAME = os.getenv("STATE_FILE_NAME", "fix.json")
+STATE_FILE_NAME = os.getenv("STATE_FILE_NAME", "mega.json")
 GITHUB_STEP_SUMMARY = os.getenv("GITHUB_STEP_SUMMARY")
 
 STREAM_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -319,11 +319,11 @@ def start_m3u_stream():
 
         has_logo1 = os.path.exists('logo.png') and os.path.getsize('logo.png') > 0
 
-        # Film başlığı yazısı (Kayan yazının üstünde hizalandı)
+        # Film başlığı yazısı (Sağ alt köşe)
         title_drawtext = (
             f"drawtext=textfile='title.txt':reload=1:fontfile='{BOLD_FONT_PATH}':"
             f"fontcolor=white@{TEXT_OPACITY}:fontsize=30:"
-            f"x=80:y=main_h-th-80"
+            f"x=main_w-text_w-80:y=main_h-th-80"
         )
 
         # Kayan yazı ve siyah arka plan bandı
@@ -336,12 +336,13 @@ def start_m3u_stream():
 
         if has_logo1:
             logo_inputs = ['-i', 'logo.png']
+            # Logo sol üst köşede
             filter_str = (
                 '[0:v]scale=1920:1080:force_original_aspect_ratio=decrease,'
                 'pad=1920:1080:(ow-iw)/2:(oh-ih)/2:black,fps=25[main];'
                 f'[{logo1_input_index}:v]scale=-2:91,format=rgba,'
                 f'colorchannelmixer=aa={LOGO_OPACITY}[logo1];'
-                '[main][logo1]overlay=main_w-overlay_w-104:80[tmp1];'
+                '[main][logo1]overlay=104:80[tmp1];'
                 f'[tmp1]{title_drawtext}[tmp2];'
                 f'[tmp2]{ticker_drawtext}[v]'
             )
