@@ -48,7 +48,7 @@ STREAM_REFERER = "https://vidmody.com/"
 STREAM_ORIGIN = "https://vidmody.com"
 
 LOGO_OPACITY = float(os.getenv("LOGO_OPACITY", "1.0"))
-TEXT_OPACITY = float(os.getenv("TEXT_OPACITY", "1.0"))
+TEXT_OPACITY = float(os.getenv("TEXT_OPACITY", "0.7"))
 BOLD_FONT_PATH = os.getenv("BOLD_FONT_PATH", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")
 
 DECODER_THREADS = os.getenv("DECODER_THREADS", "1")
@@ -525,7 +525,7 @@ def build_reader_command(target_url, seek_seconds, video_only=False):
 
     title_drawtext = (
         f"drawtext=textfile='title.txt':reload=1:fontfile='{BOLD_FONT_PATH}':"
-        f"fontcolor=white@{TEXT_OPACITY}:fontsize=25:x=40:y=h-th-40"
+        f"fontcolor=white@{TEXT_OPACITY}:fontsize=25:x=51:y=h-th-51"
     )
     base_scale = (
         '[0:v]scale=1920:1080:force_original_aspect_ratio=decrease,'
@@ -537,7 +537,7 @@ def build_reader_command(target_url, seek_seconds, video_only=False):
         logo_inputs = ['-i', 'logo.png']
         filter_str = (
             base_scale +
-            f'[{logo_index}:v]scale=-2:85,format=rgba,colorchannelmixer=aa={LOGO_OPACITY}[logo1];'
+            f'[{logo_index}:v]scale=-2:100,format=rgba,colorchannelmixer=aa={LOGO_OPACITY}[logo1];'
             '[main][logo1]overlay=W-w-50:50[tmp1];'
             f'[tmp1]{title_drawtext}[v]'
         )
