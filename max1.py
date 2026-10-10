@@ -538,7 +538,7 @@ def build_reader_command(target_url, seek_seconds, video_only=False):
         filter_str = (
             base_scale +
             f'[{logo_index}:v]scale=-2:85,format=rgba,colorchannelmixer=aa={LOGO_OPACITY}[logo1];'
-            '[main][logo1]overlay=W-w-70:70[tmp1];'
+            '[main][logo1]overlay=W-w-70:48[tmp1];'
             f'[tmp1]{title_drawtext}[v]'
         )
     else:
