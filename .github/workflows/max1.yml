@@ -35,18 +35,18 @@ jobs:
     - name: 📥 Kayıtlı State Dosyasını İndir
       continue-on-error: true
       run: |
-        curl -sL https://github.com/${{ github.repository }}/releases/download/state-data/state_fix.json -o state_fix.json
+        curl -sL https://github.com/${{ github.repository }}/releases/download/state-data/state_mega.json -o state_mega.json
 
     - name: 🚀 Yayını başlat
       env:
-        STATE_FILE_NAME: "state_fix.json"
+        STATE_FILE_NAME: "state_mega.json"
       run: python -u max1.py
 
     - name: 💾 Son Durumu Release Üzerinde Güncelle
       if: always()
       uses: softprops/action-gh-release@v1
       with:
-        files: state_fix.json
+        files: state_mega.json
         tag_name: state-data
         name: "Yayın Kaldığı Yer (State)"
         draft: false
